@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axiosIntance from '../api/axiosInstance';
-import {getAlltours} from '../api/Rutas';
 import { Card, Button, Container, Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TourCard from './TourCard';
@@ -59,7 +58,9 @@ const Tours = () => {
             <Row>
                 {tours.slice(offset, offset + toursPerPage).map((tour) => (
                     <Col key={tour.id} md={4} className="mb-4">
-                        <TourCard tour={tour} />
+                        <TourCard tour={tour} onReserve={(tourId, schedule, name) => {
+                            console.log(`Reserving tour ${tourId} for ${name} at ${schedule}`);
+                        }} />
                     </Col>
                 ))}
             </Row>

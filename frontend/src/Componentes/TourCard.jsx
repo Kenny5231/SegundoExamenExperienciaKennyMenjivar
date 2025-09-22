@@ -9,61 +9,78 @@ Esta acción levantará el método /tours/reserve.
 
 */
 import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Button, Card } from 'react-bootstrap';
+import { setReservacion } from '../api/Rutas';
+import axiosInstance from '../api/axiosInstance';
+import { useDispatch } from 'react-redux';
+import { setTours } from '../Componentes/SlideTours';
 
 const TourCard = ({ tour, onReserve }) => {
-    
     const [showAvailability, setShowAvailability] = useState(false);
-    const [selectedSchedule, setSelectedSchedule] = useState(null);
-    const [personName, setPersonName] = useState('');
-    const [error, setError] = useState(null);
-
-    const handleReserve = () => {
-        if (!selectedSchedule || !personName) {
-            setError('Please select a schedule and enter your name.');
+    const [selectedSchedule, setSelectedSchedule] = useState('');
+    const [name, setName] = useState('');
+    const dispatch = useDispatch();
+    const handleReserveClick = () => {
+        setShowAvailability(!showAvailability);
+    }
+    const handleScheduleChange = (e) => {
+        setSelectedSchedule(e.target.value);
+    } 
+    const handleNameChange = (e) => {
+        setName(e.target.value);
+    }
+    const handleReservation = async () => {
+        if (!selectedSchedule || !name) {
+            alert('Please select a schedule and enter your name.');
             return;
         }
-        setError(null);
-        onReserve(tour.id, selectedSchedule, personName);
-    };
-    return (  
-        <div className="card mb-3"> 
-            <div className="card-body">
-                <h5 className="card-title">{tour.name}</h5>
-                <p className="card-text">{tour.description}</p>
-                <button className="btn btn-primary" onClick={() => setShowAvailability(!showAvailability)}> 
+        const reservationData = {
+            tourId: tour.id,
+            schedule: selectedSchedule,
+            name: name
+        };
+        try {
+            const response = await setReservacion(reservationData);
+            alert('Reservation successful!');
+            onReserve(tour.id, selectedSchedule, name);
+            // Optionally, refresh tours in Redux store
+            const toursResponse = await axiosInstance.get('/tours');
+            dispatch(setTours(toursResponse.data));
+        }
+        catch (error) {
+            alert('Error making reservation. Please try again.');
+        }
+    };  
+    return (
+        <Card>
+            <Card.Body>
+                <Card.Title>{tour.name}</Card.Title>
+                <Card.Text>{tour.description}</Card.Text>
+                <Button variant="primary" onClick={handleReserveClick}>
                     {showAvailability ? 'Hide Availability' : 'View Availability'}
-                </button>
+                </Button>
                 {showAvailability && (
-                    <div className="mt-3">  
-                        <h6>Available Schedules:</h6>
-                        {tour.schedules.map((schedule) => (
-                            <div className="form-check" key={schedule}>
-                                <input
-                                    className="form-check-input"
-                                    type="radio"  
-                                    name={`schedule-${tour.id}`}
-                                    value={schedule}
-                                    onChange={() => setSelectedSchedule(schedule)}
-                                />
-                                <label className="form-check-label">{schedule}</label>
-                            </div>
-                        ))}
-                        <div className="mt-3">
-                            <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Enter your name"
-                                value={personName}  
-                                onChange={(e) => setPersonName(e.target.value)}
-                            />
+                    <div className="mt-3">
+                        <div>
+                            <label htmlFor={`schedule-${tour.id}`}>Select Schedule:</label>
+                            <select id={`schedule-${tour.id}`} className="form-control" value={selectedSchedule} onChange={handleScheduleChange}>
+                                <option value="">--Select--</option>
+                                {tour.availability.map((schedule, index) => (
+                                    <option key={index} value={schedule}>{schedule}</option>  
+                                ))} 
+                            </select>
                         </div>
-                        {error && <div className="text-danger mt-2">{error}</div>}
-                        <button className="btn btn-success mt-3" onClick={handleReserve}>Reserve</button>
+                        <div className="mt-2">
+                                
+                            <label htmlFor={`name-${tour.id}`}>Your Name:</label>
+                            <input type="text" id={`name-${tour.id}`} className="form-control" value={name} onChange={handleNameChange} />
+                        </div>
+                        <Button variant="success" className="mt-3" onClick={handleReservation}>Reserve</Button>
                     </div>
                 )}
-            </div>
-        </div>
+            </Card.Body>
+        </Card>
     );
-};
-
+}
 export default TourCard;
