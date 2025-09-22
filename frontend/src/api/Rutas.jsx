@@ -1,8 +1,8 @@
 import axiosInstance from './axiosInstance';
 
-getAlltours = async (limit = 10, offset = 0) => {
+export function getAlltours (limit = 10, offset = 0)  {
     try {
-        const response = await axiosInstance.get('/tours', {
+        const response =  axiosInstance.get('/tours', {
             params: { limit, offset }
         });
         return response.data;
@@ -13,9 +13,9 @@ getAlltours = async (limit = 10, offset = 0) => {
     }
 };
 
-GetAllToursDisponubles = async () => {
+export function GetAllToursDisponubles (){
     try {
-        const response = await axiosInstance.get('/tours/availability');
+        const response = axiosInstance.get('/tours/availability');
         return response.data;
     } catch (error) {
         console.error('Error fetching available tours:', error);
@@ -23,9 +23,9 @@ GetAllToursDisponubles = async () => {
     }
 };
 
-setReservacion = async (reservationData) => {
+export function setReservacion (reservationData) {
     try {
-        const response = await axiosInstance.put('/tours/reserve', reservationData);
+        const response =  axiosInstance.put('/tours/reserve', reservationData);
         return response.data;
     }
     catch (error) {
@@ -34,4 +34,3 @@ setReservacion = async (reservationData) => {
     }
 };
 
-export { getAlltours };
