@@ -2,12 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import 'bootstrap/dist/css/bootstrap.min.css'; 
 import reportWebVitals from './reportWebVitals';
+import { Provider } from 'react-redux';          // ✔ Provider de Redux
+import store from './store';                      //   tu store con RTK
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>                      {/* ✔ envolver la app con Redux */}
+      <App />
+    </Provider>
   </React.StrictMode>
 );
 

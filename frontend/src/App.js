@@ -1,6 +1,5 @@
-import logo from './logo.svg';
 import './App.css';
-import axiosInstance from './api/axiosInstance';
+
 function App() {
   
   return (
