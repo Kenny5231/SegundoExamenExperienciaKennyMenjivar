@@ -14,7 +14,7 @@ import { Button, Card } from 'react-bootstrap';
 import { setReservacion } from '../api/Rutas';
 import axiosInstance from '../api/axiosInstance';
 import { useDispatch } from 'react-redux';
-import { setTours } from '../Componentes/SlideTours';
+import  SlideTours  from '../Componentes/SlideTours';
 
 const TourCard = ({ tour, onReserve }) => {
     const [showAvailability, setShowAvailability] = useState(false);
@@ -46,7 +46,7 @@ const TourCard = ({ tour, onReserve }) => {
             onReserve(tour.id, selectedSchedule, name);
             // Optionally, refresh tours in Redux store
             const toursResponse = await axiosInstance.get('/tours');
-            dispatch(setTours(toursResponse.data));
+            dispatch(SlideTours(toursResponse.data));
         }
         catch (error) {
             alert('Error making reservation. Please try again.');
